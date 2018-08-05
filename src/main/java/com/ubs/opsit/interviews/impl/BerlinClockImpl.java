@@ -1,7 +1,7 @@
 package com.ubs.opsit.interviews.impl;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.log4j.Logger;
@@ -30,7 +30,7 @@ public class BerlinClockImpl implements TimeConverter {
 	Map<String, StringBuffer> clockDataObj = null;
 
 	void initTimeData() {
-		clockDataObj = new TreeMap<String, StringBuffer>();
+		clockDataObj = new HashMap<String, StringBuffer>();
 		clockDataObj.put(FIRSTROW, new StringBuffer());
 		clockDataObj.put(SECONDROW, new StringBuffer());
 		clockDataObj.put(THIRDROW, new StringBuffer());
@@ -46,8 +46,12 @@ public class BerlinClockImpl implements TimeConverter {
 		int hours =0; int mins = 0; int seconds = 0;
 		int firstRowVal = 5;
 		int thirdRowVal = 5;
-		boolean isValidNumber = validateTimeforNumber(inputData); //to check if input in hh:mm:ss only contains numbers
-		if(isValidNumber){
+		boolean isvalidLength = validateInputFoLength(inputData); //to check if input length is correct
+		boolean isValidNumber = true;
+		if (isvalidLength){
+			validateTimeforNumber(inputData); //to check if input in hh:mm:ss only contains numbers
+		}
+		if(isvalidLength && isValidNumber){
 			hours = Integer.parseInt(inputData[0]);
 			mins = Integer.parseInt(inputData[1]);
 			seconds = Integer.parseInt(inputData[2]);
@@ -128,15 +132,25 @@ public class BerlinClockImpl implements TimeConverter {
 		}
 		return true;
 	}
+	
+	private boolean validateInputFoLength(String[] inputTime) {
+		for(String time : inputTime){
+			if(time.length()>2){
+				logger.warn("Time defined in the input shoud be in the 24hrs format - hh:mm:ss");
+				return false;
+			}
+		}
+		return true;
+	}
 
 	
 
 	private boolean validateInputTime(int hours, int mins, int seconds) {
 		
-		if(hours<=HOUR && mins<=MIN_SECS && seconds<=MIN_SECS){
+		if(hours<=HOUR && mins<MIN_SECS && seconds<MIN_SECS){
 			return true;
 		}else{
-			logger.warn("Please enter correct time as input : hh:mm:ss"); 
+			logger.warn("Please enter correct time as input : hh:mm:ss, i.e hh <= 24, mm/ss <= 59"); 
 			return false;
 		}
 	}
